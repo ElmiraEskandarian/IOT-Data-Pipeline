@@ -1,0 +1,14 @@
+{
+  "model_type": "random_forest",
+  "training_date": "2025-12-21T23:47:40.196424",
+  "metrics": {
+    "test_mse": 0.252824006259387,
+    "test_rmse": 0.5028160759754873,
+    "test_mae": 0.2712637376854744,
+    "test_r2": 0.9635838696972627,
+    "test_mape": 1.2358060716652504,
+    "train_r2": 0.9886585799331211,
+    "train_mse": 0.152092708838013
+  },
+  "model_class": "RandomForestRegressor"
+}
