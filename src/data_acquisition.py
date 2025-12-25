@@ -92,21 +92,3 @@ class DataAcquisition:
         except Exception as e:
             logger.error(f"Error getting real data: {str(e)}")
             raise
-
-    def get_all_data(self) -> Dict[str, pd.DataFrame]:
-
-        try:
-            synthetic_data = self.generate_synthetic_data()
-            synthetic_data.to_csv(self.config.SYNTHETIC_DATA_PATH, index=False)
-            logger.info(f"Synthetic data saved to {self.config.SYNTHETIC_DATA_PATH}")
-
-            real_data = self.get_real_data()
-
-            return {
-                'synthetic': synthetic_data,
-                'real': real_data
-            }
-
-        except Exception as e:
-            logger.error(f"Error in get_all_data: {str(e)}")
-            raise

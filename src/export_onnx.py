@@ -146,9 +146,7 @@ class ONNXExporter:
 
             model = training_results['model']
 
-
             onnx_path = self.convert_to_onnx(model, X_sample)
-
 
             comparison_result = self.compare_predictions(
                 model,
@@ -158,8 +156,7 @@ class ONNXExporter:
 
 
             export_results = {
-                'onnx_path': onnx_path,
-                'onnx_available': ONNX_AVAILABLE,
+                'onnx_path': str(onnx_path),              'onnx_available': ONNX_AVAILABLE,
                 'prediction_match': comparison_result,
                 'model_type': type(model).__name__,
                 'input_shape': X_sample.shape,

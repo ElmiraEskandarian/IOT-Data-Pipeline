@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import argparse
+import numpy as np
 import json
 from datetime import datetime
 
@@ -129,7 +130,7 @@ class IoTPipeline:
             exporter = ONNXExporter()
             export_results = exporter.export_training_results(
                 training_results,
-                preprocessing_results['X_test'][:10]
+                preprocessing_results['X_test'][:10].to_numpy().astype(np.float32)
             )
 
             self.pipeline_results['onnx_export'] = export_results
@@ -331,28 +332,28 @@ class IoTPipeline:
         print("=" * 60)
 
 
-def main():
-
-    parser = argparse.ArgumentParser(description='IoT Data Pipeline - Advanced Computer Programming Final Project')
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='IoT Data Pipeline - Advanced Computer Programming Final Project'
+    )
 
     parser.add_argument('--skip-data', action='store_true', help='Skip data acquisition step')
     parser.add_argument('--no-synthetic', action='store_true', help='Do not generate synthetic data')
     parser.add_argument('--no-real', action='store_true', help='Do not download real data')
+    parser.add_argument('--use-real-data', action='store_true', help='Use real data instead of synthetic for training')
 
-    parser.add_argument('--use-real-data', action='store_true',
-                        help='Use real data instead of synthetic for training')
-
-    parser.add_argument('--model-type', type=str, default=None,
-                        choices=['linear', 'random_forest', 'gradient_boosting', 'svm', 'neural_network'],
-                        help='Type of model to train')
+    parser.add_argument(
+        '--model-type', type=str, default=None,
+        choices=['linear', 'random_forest', 'gradient_boosting', 'svm', 'neural_network'],
+        help='Type of model to train'
+    )
 
     parser.add_argument('--skip-onnx', action='store_true', help='Skip ONNX export step')
-    parser.add_argument('--quick', action='store_true', help='Run quick test with minimal data')
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    if args.quick:
-        logger.info("Running in QUICK mode")
+def main():
+    args = parse_arguments()
 
     pipeline = IoTPipeline()
     pipeline.run_pipeline(args)

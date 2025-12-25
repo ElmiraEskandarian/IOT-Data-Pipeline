@@ -6,3 +6,5 @@ __pycache__/
 data/
 .cache/
 logs/
+outputs/
+models/

@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from typing import Tuple, List, Dict, Any
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import warnings
 
@@ -183,24 +183,25 @@ class DataPreprocessor:
                 else:
                     target_col = df.columns[1]
 
-            X = df[feature_cols]
+            x = df[feature_cols]
             y = df[target_col]
 
-            X_scaled, scaler = self.scale_features(X, feature_cols)
 
-            X_train, X_test, y_train, y_test = train_test_split(
-                X_scaled, y,
+            x_train, x_test, y_train, y_test = train_test_split(
+                x, y,
                 test_size=self.config.TEST_SIZE,
                 random_state=self.config.RANDOM_STATE,
                 shuffle=False
             )
 
+            x_scaled, scaler = self.scale_features(x, feature_cols)
+
             self.feature_columns = feature_cols
             self.target_column = target_col
 
-            logger.info(f"Data prepared. Shapes - X_train: {X_train.shape}, X_test: {X_test.shape}")
+            logger.info(f"Data prepared. Shapes - X_train: {x_train.shape}, X_test: {x_test.shape}")
 
-            return X_train, X_test, y_train, y_test, scaler
+            return x_train, x_test, y_train, y_test, scaler
 
         except Exception as e:
             logger.error(f"Error preparing data: {str(e)}")
