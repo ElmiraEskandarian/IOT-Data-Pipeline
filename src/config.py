@@ -13,8 +13,10 @@ class Config:
     for directory in [RAW_DATA_DIR, PROCESSED_DATA_DIR, MODELS_DIR, OUTPUTS_DIR, PLOTS_DIR]:
         directory.mkdir(parents=True, exist_ok=True)
 
-    SYNTHETIC_DATA_PATH = RAW_DATA_DIR / "sensor_data.csv"
-    REAL_DATA_PATH = RAW_DATA_DIR / "real_weather.csv"
+    KAGGLE_WEATHER_DATASET_URL = "https://www.kaggle.com/datasets/muthuj7/weather-dataset"
+
+    SYNTHETIC_DATA_PATH = RAW_DATA_DIR / "synthetic_data.csv"
+    REAL_DATA_PATH = RAW_DATA_DIR / "weatherHistory.csv"
     CLEAN_DATA_PATH = PROCESSED_DATA_DIR / "clean_data.csv"
     MODEL_PKL_PATH = MODELS_DIR / "temperature_model.pkl"
     MODEL_ONNX_PATH = MODELS_DIR / "temperature_model.onnx"

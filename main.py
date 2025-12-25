@@ -1,12 +1,9 @@
-#!/usr/bin/env python3
-
 import sys
 from pathlib import Path
 import argparse
 import json
 from datetime import datetime
 
-sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from src.config import Config
 from src.logger import logger
@@ -19,7 +16,6 @@ from src.evaluation import ModelEvaluator
 
 
 class IoTPipeline:
-    """Main orchestrator for the IoT data pipeline"""
 
     def __init__(self):
         self.config = Config
@@ -28,9 +24,7 @@ class IoTPipeline:
         logger.info("IoT DATA PIPELINE - INITIALIZED")
         logger.info("=" * 60)
 
-    def run_data_acquisition(self, generate_synthetic: bool = True,
-                             download_real: bool = True) -> dict:
-        """Step 1: Data Acquisition"""
+    def run_data_acquisition(self, generate_synthetic: bool = True, download_real: bool = True) -> dict:
         logger.info("\n" + "=" * 60)
         logger.info("STEP 1: DATA ACQUISITION")
         logger.info("=" * 60)
@@ -230,7 +224,6 @@ class IoTPipeline:
             raise
 
 
-
     def run_pipeline(self, args):
         logger.info("\n" + "=" * 60)
         logger.info("STARTING COMPLETE IOT DATA PIPELINE")
@@ -286,6 +279,7 @@ class IoTPipeline:
             logger.error("Check the logs for details.")
             sys.exit(1)
 
+
     def save_pipeline_results(self, duration: float):
         try:
             self.pipeline_results['metadata'] = {
@@ -338,16 +332,13 @@ class IoTPipeline:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='IoT Data Pipeline - Advanced Computer Programming Final Project'
-    )
 
-    parser.add_argument('--skip-data', action='store_true',
-                        help='Skip data acquisition step')
-    parser.add_argument('--no-synthetic', action='store_true',
-                        help='Do not generate synthetic data')
-    parser.add_argument('--no-real', action='store_true',
-                        help='Do not download real data')
+    parser = argparse.ArgumentParser(description='IoT Data Pipeline - Advanced Computer Programming Final Project')
+
+    parser.add_argument('--skip-data', action='store_true', help='Skip data acquisition step')
+    parser.add_argument('--no-synthetic', action='store_true', help='Do not generate synthetic data')
+    parser.add_argument('--no-real', action='store_true', help='Do not download real data')
+
     parser.add_argument('--use-real-data', action='store_true',
                         help='Use real data instead of synthetic for training')
 
@@ -355,11 +346,8 @@ def main():
                         choices=['linear', 'random_forest', 'gradient_boosting', 'svm', 'neural_network'],
                         help='Type of model to train')
 
-    parser.add_argument('--skip-onnx', action='store_true',
-                        help='Skip ONNX export step')
-
-    parser.add_argument('--quick', action='store_true',
-                        help='Run quick test with minimal data')
+    parser.add_argument('--skip-onnx', action='store_true', help='Skip ONNX export step')
+    parser.add_argument('--quick', action='store_true', help='Run quick test with minimal data')
 
     args = parser.parse_args()
 
