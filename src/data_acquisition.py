@@ -17,44 +17,32 @@ class DataAcquisition:
         try:
             logger.info("Generating simple synthetic weather data...")
 
-            # Create time range
-            n_rows = 10000  # Similar to your real data size
+            n_rows = 10000
             start_date = datetime(2025, 1, 1)
             times = [start_date + timedelta(hours=i) for i in range(n_rows)]
 
-            # Generate simple patterns for each column
             hours = np.arange(n_rows)
 
-            # Temperature (C) - simple daily pattern
             temperature = 10 + 10 * np.sin(2 * np.pi * (hours % 24) / 24) + np.random.normal(0, 2, n_rows)
 
-            # Apparent Temperature (C) - similar to temperature with slight variation
             apparent_temp = temperature + np.random.normal(0, 1, n_rows)
 
-            # Humidity (0-1 scale)
             humidity = 0.5 + 0.3 * np.sin(2 * np.pi * (hours % 24) / 24 - np.pi / 4) + np.random.normal(0, 0.1, n_rows)
             humidity = np.clip(humidity, 0, 1)
 
-            # Wind Speed (km/h)
             wind_speed = 10 + 5 * np.random.random(n_rows)
-
-            # Wind Bearing (degrees)
             wind_bearing = np.random.uniform(0, 360, n_rows)
 
-            # Visibility (km)
             visibility = 10 + 5 * np.random.random(n_rows)
 
-            # Pressure (millibars)
             pressure = 1013 + 10 * np.random.random(n_rows)
 
-            # Simple categorical columns
             summaries = np.random.choice(
                 ['Partly Cloudy', 'Clear', 'Overcast', 'Rain', 'Snow'],
                 size=n_rows,
                 p=[0.3, 0.3, 0.2, 0.15, 0.05]
             )
 
-            # Precip Type based on summary
             precip_type = []
             for summary in summaries:
                 if summary == 'Rain':
@@ -64,7 +52,6 @@ class DataAcquisition:
                 else:
                     precip_type.append(None)
 
-            # Daily Summary - simple pattern
             daily_summaries = []
             for i in range(n_rows):
                 hour = hours[i] % 24
@@ -73,7 +60,6 @@ class DataAcquisition:
                 else:
                     daily_summaries.append('Partly cloudy throughout the day.')
 
-            # Create DataFrame with EXACT same columns as real data
             df = pd.DataFrame({
                 'Formatted Date': times,
                 'Summary': summaries,
@@ -89,7 +75,6 @@ class DataAcquisition:
                 'Daily Summary': daily_summaries
             })
 
-            # Add a tiny bit of missing values (like real data)
             mask = np.random.random(df.shape) < 0.01
             df = df.mask(mask)
 

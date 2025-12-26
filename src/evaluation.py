@@ -59,7 +59,7 @@ class ModelEvaluator:
             plt.legend()
             plt.grid(True)
 
-            save_path = save_path or self.config.OUTPUTS_DIR / "predictions_vs_actual.png"
+            save_path = save_path or self.config.PLOTS_DIR / "predictions_vs_actual.png"
             plt.savefig(save_path, dpi=300)
             plt.close()
             return save_path

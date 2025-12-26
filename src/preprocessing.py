@@ -28,6 +28,13 @@ class DataPreprocessor:
 
         df = df.drop(columns=['Daily Summary', 'Formatted Date'])
         df = df.dropna()
+
+        LEAKAGE_COLUMNS = [
+            'Apparent Temperature (C)',
+        ]
+
+        df = df.drop(columns=[c for c in LEAKAGE_COLUMNS if c in df.columns])
+
         df = pd.get_dummies(df, columns=['Summary', 'Precip Type'], drop_first=True)
 
         logger.info(f"After preprocessing shape: {df.shape}")
