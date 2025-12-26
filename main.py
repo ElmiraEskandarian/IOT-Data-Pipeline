@@ -103,16 +103,12 @@ class IoTPipeline:
             training_results = trainer.run_training_pipeline(preprocessing_results)
 
             self.pipeline_results['training'] = {
-                'model_path': str(training_results['model_path']),
                 'metrics': training_results['metrics'],
                 'cv_results': training_results['cv_results'],
                 'model_type': type(training_results['model']).__name__
             }
 
             logger.info(f"Training completed:")
-            logger.info(f"  Model: {self.pipeline_results['training']['model_type']}")
-            logger.info(f"  Test R²: {training_results['metrics']['test_r2']:.4f}")
-            logger.info(f"  Test RMSE: {training_results['metrics']['test_rmse']:.4f}")
 
             return training_results
 
@@ -128,17 +124,12 @@ class IoTPipeline:
 
         try:
             exporter = ONNXExporter()
-            export_results = exporter.export_training_results(
-                training_results,
-                preprocessing_results['X_test'][:10].to_numpy().astype(np.float32)
-            )
+            export_results = exporter.run_onnx_export(training_results, preprocessing_results)
 
             self.pipeline_results['onnx_export'] = export_results
 
             logger.info(f"ONNX export completed:")
             logger.info(f"  ONNX Path: {export_results['onnx_path']}")
-            logger.info(f"  Prediction Match: {export_results['prediction_match']}")
-
             return export_results
 
         except Exception as e:
@@ -146,26 +137,23 @@ class IoTPipeline:
             raise
 
 
-    def run_inference(self, preprocessing_results: dict,
-                      use_onnx: bool = True) -> dict:
+    def run_inference(self, preprocessing_results: dict) -> dict:
         logger.info("\n" + "=" * 60)
         logger.info("STEP 5: MODEL INFERENCE")
         logger.info("=" * 60)
 
         try:
-            inference = ModelInference(use_onnx=use_onnx)
+            inference = ModelInference()
             inference.load_model()
 
             X_test = preprocessing_results['X_test']
             y_test = preprocessing_results['y_test']
-            scaler = preprocessing_results.get('scaler')
 
-            predictions = inference.predict(X_test, scaler)
+            predictions = inference.predict(X_test.to_numpy().astype(np.float32))
 
             self.pipeline_results['inference'] = {
                 'predictions_path': str(self.config.PREDICTIONS_PATH),
                 'samples_predicted': len(predictions),
-                'model_info': inference.get_model_info()
             }
 
             logger.info(f"Inference completed:")
@@ -206,9 +194,7 @@ class IoTPipeline:
             evaluation_summary = evaluator.run_complete_evaluation(
                 y_test, predictions,
                 model=model,
-                feature_names=feature_names,
-                y_train_true=y_train_true,
-                y_train_pred=y_train_pred
+                feature_names=feature_names
             )
 
             self.pipeline_results['evaluation'] = evaluation_summary
@@ -240,7 +226,7 @@ class IoTPipeline:
                 )
 
             preprocessing_results = self.run_preprocessing(
-                use_synthetic=not args.use_real_data
+                use_synthetic=not args.no_synthetic
             )
 
             training_results = self.run_training(
@@ -248,16 +234,12 @@ class IoTPipeline:
                 model_type=args.model_type
             )
 
-            if not args.skip_onnx:
-                onnx_results = self.run_onnx_export(
-                    training_results,
-                    preprocessing_results
-                )
-
-            inference_results = self.run_inference(
-                preprocessing_results,
-                use_onnx=not args.skip_onnx
+            onnx_results = self.run_onnx_export(
+                training_results,
+                preprocessing_results
             )
+
+            inference_results = self.run_inference(preprocessing_results)
 
             evaluation_results = self.run_evaluation(
                 inference_results,
@@ -269,11 +251,11 @@ class IoTPipeline:
 
             self.save_pipeline_results(duration)
 
-            self.print_summary(duration)
+            logger.info(f"\nPipeline Duration: {duration:.2f} seconds")
 
             logger.info("\n" + "=" * 60)
             logger.info("PIPELINE COMPLETED SUCCESSFULLY!")
-            logger.info("=" * 60)
+            logger.info("\n" + "=" * 60)
 
         except Exception as e:
             logger.error(f"\nPipeline failed: {str(e)}")
@@ -304,34 +286,6 @@ class IoTPipeline:
             logger.error(f"Error saving pipeline results: {str(e)}")
 
 
-    def print_summary(self, duration: float):
-        print("\n" + "=" * 60)
-        print("IOT DATA PIPELINE - SUMMARY")
-        print("=" * 60)
-
-        if 'training' in self.pipeline_results:
-            metrics = self.pipeline_results['training']['metrics']
-            print(f"\nModel Performance:")
-            print(f"  R² Score: {metrics['test_r2']:.4f}")
-            print(f"  RMSE: {metrics['test_rmse']:.4f}")
-            print(f"  MAE: {metrics['test_mae']:.4f}")
-
-        if 'evaluation' in self.pipeline_results:
-            plots = self.pipeline_results['evaluation']['plots']
-            print(f"\nGenerated Plots:")
-            for plot_name in plots:
-                print(f"  • {plot_name}")
-
-        print(f"\nOutput Files:")
-        paths = self.config.get_all_paths()
-        for name, path in paths.items():
-            if path.exists():
-                print(f"  • {name}: {path}")
-
-        print(f"\nPipeline Duration: {duration:.2f} seconds")
-        print("=" * 60)
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description='IoT Data Pipeline - Advanced Computer Programming Final Project'
@@ -348,9 +302,8 @@ def parse_arguments():
         help='Type of model to train'
     )
 
-    parser.add_argument('--skip-onnx', action='store_true', help='Skip ONNX export step')
-
     return parser.parse_args()
+
 
 def main():
     args = parse_arguments()
