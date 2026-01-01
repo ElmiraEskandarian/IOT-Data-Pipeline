@@ -11,7 +11,7 @@ class ONNXExporter:
 
     def __init__(self, onnx_path: Path | None = None):
         self.onnx_path = onnx_path or Config.MODEL_ONNX_PATH
-        logger.info("Initialized ONNXExporter on onnx path")
+        logger.info(f"Initialized ONNXExporter on onnx path: {self.onnx_path}")
 
     def run_onnx_export(self, training_results: dict, preprocessing_results: dict) -> dict:
 

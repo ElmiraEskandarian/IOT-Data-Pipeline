@@ -22,29 +22,6 @@ class Config:
     MODEL_ONNX_PATH = MODELS_DIR / "temperature_model.onnx"
     PREDICTIONS_PATH = OUTPUTS_DIR / "predictions.csv"
 
-    SENSOR_COUNT = 5
-    TIME_PERIODS = 1000
-    FREQUENCY = "H"
-    START_DATE = "2025-01-01"
-
-    TEMPERATURE_PARAMS = {
-        'base': 20,
-        'amplitude': 5,
-        'noise_std': 0.5
-    }
-
-    HUMIDITY_PARAMS = {
-        'base': 50,
-        'amplitude': 10,
-        'noise_std': 1
-    }
-
-    PRESSURE_PARAMS = {
-        'base': 1013,
-        'amplitude': 20,
-        'noise_std': 2
-    }
-
     TEST_SIZE = 0.2
     RANDOM_STATE = 42
 

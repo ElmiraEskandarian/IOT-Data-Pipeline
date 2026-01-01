@@ -1,4 +1,4 @@
-# IoT Data Pipeline - Advanced Computer Programming Final Project
+# IoT Data Pipeline 
 
 ## Project Overview
 This project implements a complete end-to-end IoT data pipeline for sensor data processing, machine learning, and deployment. The pipeline includes data acquisition, preprocessing, model training, ONNX export, inference, and evaluation.

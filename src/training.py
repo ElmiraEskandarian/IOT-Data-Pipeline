@@ -17,6 +17,7 @@ warnings.filterwarnings('ignore')
 
 from src.config import Config
 from src.logger import logger
+
 class ModelTrainer:
 
     MODEL_REGISTRY = {

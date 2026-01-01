@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import argparse
 import numpy as np
+import pandas as pd
 import json
 from datetime import datetime
 
@@ -45,7 +46,7 @@ class IoTPipeline:
                 logger.info(f"Synthetic data generated: {synthetic_data.shape}")
 
             if download_real:
-                real_data = data_acquirer.get_real_data(True)
+                real_data = data_acquirer.get_real_data()
                 data_results['real'] = {
                     'path': str(self.config.REAL_DATA_PATH),
                     'shape': real_data.shape,
@@ -91,8 +92,7 @@ class IoTPipeline:
             logger.error(f"Preprocessing failed: {str(e)}")
             raise
 
-    def run_training(self, preprocessing_results: dict,
-                     model_type: str = None) -> dict:
+    def run_training(self, preprocessing_results: dict, model_type: str = None) -> dict:
         logger.info("\n" + "=" * 60)
         logger.info("STEP 3: MODEL TRAINING")
         logger.info("=" * 60)
@@ -104,7 +104,7 @@ class IoTPipeline:
 
             self.pipeline_results['training'] = {
                 'metrics': training_results['metrics'],
-                'cv_results': training_results['cv_results'],
+                # 'cv_results': training_results['cv_results'],
                 'model_type': type(training_results['model']).__name__
             }
 
@@ -129,7 +129,6 @@ class IoTPipeline:
             self.pipeline_results['onnx_export'] = export_results
 
             logger.info(f"ONNX export completed:")
-            logger.info(f"  ONNX Path: {export_results['onnx_path']}")
             return export_results
 
         except Exception as e:
@@ -182,8 +181,6 @@ class IoTPipeline:
             predictions = inference_results['predictions']
             y_test = inference_results['y_test']
 
-            y_train_pred = None
-            y_train_true = None
             model = inference_results.get('model')
             feature_names = None
 
